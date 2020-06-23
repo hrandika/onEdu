@@ -1,0 +1,1 @@
+# This is an adroid project that you can open with Android Studio
