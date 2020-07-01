@@ -1,4 +1,4 @@
-package com.hrandika.angular.onedu.ui.share
+package com.hrandika.angular.onedu.course.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,22 +10,23 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.hrandika.angular.onedu.R
 
-class ShareFragment : Fragment() {
+class SearchCourseFragment : Fragment(){
 
-    private lateinit var shareViewModel: ShareViewModel
+    private lateinit var viewModel: SearchCourseViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        shareViewModel =
-            ViewModelProviders.of(this).get(ShareViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_share, container, false)
-        val textView: TextView = root.findViewById(R.id.text_search)
-        shareViewModel.text.observe(this, Observer {
+        viewModel =
+            ViewModelProviders.of(this).get(SearchCourseViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_search_course, container, false)
+        val textView: TextView = root.findViewById(R.id.search_text)
+        viewModel.text.observe(this, Observer {
             textView.text = it
         })
         return root
     }
+
 }

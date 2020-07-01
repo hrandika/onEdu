@@ -16,11 +16,15 @@
         android:name="com.hrandika.angular.onedu.course.ui.CourseFragment"
         android:label="@string/menu_courses"
         tools:layout="@layout/fragment_course" />
-
+    <fragment
+        android:id="@+id/nav_search_course"
+        android:name="com.hrandika.angular.onedu.course.ui.SearchCourseFragment"
+        android:label="@string/menu_search_course"
+        tools:layout="@layout/fragment_search_course" />
     <fragment
         android:id="@+id/nav_gallery"
         android:name="com.hrandika.angular.onedu.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
+        android:label="@string/menu_search_course"
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
