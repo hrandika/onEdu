@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.hrandika.angular.onedu.R
-
+//asss
 class SearchCourseFragment : Fragment(){
 
     private lateinit var viewModel: SearchCourseViewModel
