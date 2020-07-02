@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "510657092625",
+    "firebase_url": "https://oneedu-97247.firebaseio.com",
+    "project_id": "oneedu-97247",
+    "storage_bucket": "oneedu-97247.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510657092625:android:be9fba024d072a203da5b0",
+        "android_client_info": {
+          "package_name": "com.hrandika.angular.onedu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "510657092625-os3b8f4gu5m1jps5k35cu73lkje48g49.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4rnoHYnb2zIiau35gtfF1C4LQa8NPjgU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "510657092625-os3b8f4gu5m1jps5k35cu73lkje48g49.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
