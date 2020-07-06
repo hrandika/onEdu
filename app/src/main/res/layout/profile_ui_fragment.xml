@@ -31,6 +31,7 @@
         app:layout_constraintVertical_bias="0.144" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="235dp"
         android:layout_height="270dp"
         android:layout_marginBottom="24dp"
@@ -95,8 +96,8 @@
                     android:layout_width="234dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textAlignment="center"
-                    android:text="profile description" />
+                    android:text="profile description"
+                    android:textAlignment="center" />
             </LinearLayout>
 
         </LinearLayout>
@@ -177,17 +178,6 @@
         </LinearLayout>
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="363dp"
-        android:layout_height="253dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.964" />
-
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
@@ -201,6 +191,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/view3"
         app:layout_constraintVertical_bias="0.558" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/course"
+        android:name="com.hrandika.angular.onedu.profile.ui.profile_ui"
+        android:layout_width="385dp"
+        android:layout_height="244dp"
+        app:layoutManager="LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        tools:context=".profile.ui.profile_ui"
+        tools:listitem="@layout/fragment_course_item_profile" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
