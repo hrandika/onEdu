@@ -5,6 +5,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+apply plugin: 'com.google.gms.google-services'
+
 android {
     packagingOptions {
         exclude 'META-INF/atomicfu.kotlin_module'
@@ -99,6 +101,11 @@ dependencies {
     //show image from url
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'jp.wasabeef:picasso-transformations:2.2.1'
+
+    //firebase
+    implementation 'com.google.firebase:firebase-analytics:17.2.2'
+    implementation 'com.google.firebase:firebase-storage-ktx:19.1.1'
+
 
     // Testing
     testImplementation 'junit:junit:4.12'
