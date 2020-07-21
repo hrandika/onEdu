@@ -46,6 +46,7 @@
     <EditText
         android:id="@+id/url"
         android:layout_width="match_parent"
+        android:layout_marginTop="30dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/name"
         android:hint="upload file" />
@@ -64,6 +65,7 @@
         android:layout_width="96dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/file_upload"
+        android:layout_marginTop="50dp"
         android:layout_marginLeft="150dp"
         android:layout_marginRight="150dp"
         android:background="@color/colorAccent"
