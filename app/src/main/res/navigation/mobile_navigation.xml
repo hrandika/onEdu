@@ -18,6 +18,12 @@
         tools:layout="@layout/fragment_course" />
 
     <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.hrandika.angular.onedu.profile.ui.profile_ui"
+        android:label="Profile"
+        tools:layout="@layout/profile_ui_fragment" />
+
+    <fragment
         android:id="@+id/nav_gallery"
         android:name="com.hrandika.angular.onedu.ui.gallery.GalleryFragment"
         android:label="@string/menu_gallery"
