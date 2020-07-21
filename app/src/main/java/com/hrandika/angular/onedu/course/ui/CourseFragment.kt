@@ -1,7 +1,5 @@
 package com.hrandika.angular.onedu.course.ui
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +9,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import com.hrandika.angular.onedu.R
 
 
-class CourseFragment : Fragment(){
+class CourseFragment : Fragment() {
 
     private lateinit var viewModel: CourseViewModel
 
