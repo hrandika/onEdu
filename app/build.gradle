@@ -15,7 +15,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.hrandika.angular.onedu"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -39,6 +39,8 @@ android {
 dependencies {
     // Room components
     implementation "androidx.room:room-runtime:$rootProject.roomVersion"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
     kapt "androidx.room:room-compiler:$rootProject.roomVersion"
     implementation "androidx.room:room-ktx:$rootProject.roomVersion"
     androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
@@ -72,11 +74,19 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.0.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.0.0'
 
-    //show image from url
+    // Biometrics
+    def biometric_version = "1.0.1"
+    implementation "androidx.biometric:biometric:$biometric_version"
+
+    // Gson
+    def gson_version = "2.8.6"
+    implementation "com.google.code.gson:gson:$gson_version"
+
+    // Show image from url
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'jp.wasabeef:picasso-transformations:2.2.1'
 
-    //firebase
+    // Firebase
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation 'com.google.firebase:firebase-storage-ktx:19.1.1'
 
