@@ -23,6 +23,7 @@ import com.hrandika.angular.onedu.utils.crypto.BiometricPromptUtils
 import com.hrandika.angular.onedu.utils.crypto.CIPHERTEXT_WRAPPER
 import com.hrandika.angular.onedu.utils.crypto.CryptographyManager
 import com.hrandika.angular.onedu.utils.crypto.SHARED_PREFS_FILENAME
+import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
     private val TAG = "AppCompatActivity"
@@ -49,7 +50,7 @@ class LoginActivity : AppCompatActivity() {
         val useBio = findViewById<Button>(R.id.loginBio)
 
         useBio.setOnClickListener {
-
+            this.showBiometricPromptForDecryption(LoggedInUserView("firsn name", "id"));
         }
 
 
@@ -118,6 +119,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun updateUiWithUser(model: LoggedInUserView) {
         this.showBiometricPromptForEncryption(model);
+//        this.showBiometricPromptForDecryption(model);
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
@@ -152,18 +154,52 @@ class LoginActivity : AppCompatActivity() {
         model: LoggedInUserView
     ) {
         authResult.cryptoObject?.cipher?.apply {
-            model.token?.let { token ->
-                {
-                    Log.d(TAG, "The token from server is $token")
-                    val encryptedServerTokenWrapper = cryptographyManager.encryptData(token, this)
-                    cryptographyManager.persistCiphertextWrapperToSharedPrefs(
-                        encryptedServerTokenWrapper,
-                        applicationContext,
-                        SHARED_PREFS_FILENAME,
-                        Context.MODE_PRIVATE,
-                        CIPHERTEXT_WRAPPER
+//            Log.d(TAG, "The token from server is ${model.token}")
+            val encryptedServerTokenWrapper = cryptographyManager.encryptData(model.token, this)
+            cryptographyManager.persistCiphertextWrapperToSharedPrefs(
+                encryptedServerTokenWrapper,
+                applicationContext,
+                SHARED_PREFS_FILENAME,
+                Context.MODE_PRIVATE,
+                CIPHERTEXT_WRAPPER
+            )
+        }
+    }
+
+    private fun showBiometricPromptForDecryption(model: LoggedInUserView) {
+        if(ciphertextWrapper != null){
+            val canAuthenticate = BiometricManager.from(applicationContext).canAuthenticate()
+            if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
+                ciphertextWrapper?.let { textWrapper ->
+                    val secretKeyName = getString(R.string.secret_key_name)
+                    val cipher = cryptographyManager.getInitializedCipherForDecryption(
+                        secretKeyName,
+                        textWrapper.initializationVector
                     )
+                    var biometricPrompt =
+                        BiometricPromptUtils.createBiometricPrompt(
+                            this,
+                            model,
+                            ::decryptServerTokenFromStorage
+                        )
+                    val promptInfo = BiometricPromptUtils.createPromptInfo(this)
+                    biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
                 }
+            }
+        }else{
+            Toast.makeText(this, "You haven't logged in", Toast.LENGTH_LONG).show()
+        }
+
+    }
+
+    private fun decryptServerTokenFromStorage(authResult: BiometricPrompt.AuthenticationResult, model: LoggedInUserView) {
+        ciphertextWrapper?.let { textWrapper ->
+            authResult.cryptoObject?.cipher?.let {
+                val plaintext =
+                    cryptographyManager.decryptData(textWrapper.ciphertext, it)
+//                Log.d("decryption", plaintext)
+//                username.setText("plaintext");
+                Toast.makeText(this, "Decrypted token is $plaintext", Toast.LENGTH_LONG).show()
             }
         }
     }
