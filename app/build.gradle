@@ -39,8 +39,10 @@ android {
 dependencies {
     // Room components
     implementation "androidx.room:room-runtime:$rootProject.roomVersion"
+
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.annotation:annotation:1.1.0'
+
     kapt "androidx.room:room-compiler:$rootProject.roomVersion"
     implementation "androidx.room:room-ktx:$rootProject.roomVersion"
     androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"

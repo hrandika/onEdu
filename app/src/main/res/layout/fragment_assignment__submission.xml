@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    >
+
+
+    <ImageView
+        android:id="@+id/thumbnail_view"
+        android:src="@drawable/ic_menu_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="50dp"
+        android:layout_marginTop="50dp"/>
+
+    <TextView android:id="@+id/message_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/thumbnail_view"
+        android:textSize="4mm"
+        android:text="SENG 22222"
+        textsi
+        android:layout_marginTop="50dp"/>
+    <TextView
+        android:id="@+id/label2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send Your Work"
+        android:textSize="4mm"
+        android:layout_below="@id/message_view"
+        android:layout_marginTop="50dp" />
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label2"
+        android:layout_marginTop="50dp"
+        android:inputType="textMultiLine"
+        android:lines="8"
+        android:maxLines="10"
+        android:minLines="6"
+        android:hint="Mesaage" />
+
+    <EditText
+        android:id="@+id/url"
+        android:layout_width="match_parent"
+        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:hint="upload file" />
+
+
+
+    <Button
+        android:id="@+id/file_upload"
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/url"
+        android:text="open file" />
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/file_upload"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="150dp"
+        android:layout_marginRight="150dp"
+        android:background="@color/colorAccent"
+        android:textColor="@color/cardview_light_background"
+        android:text="Send" />
+
+</RelativeLayout>
