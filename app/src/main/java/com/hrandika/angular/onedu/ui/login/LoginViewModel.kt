@@ -8,6 +8,7 @@ import com.hrandika.angular.onedu.data.LoginRepository
 import com.hrandika.angular.onedu.data.Result
 
 import com.hrandika.angular.onedu.R
+import java.util.logging.Logger
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 
@@ -22,6 +23,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         val result = loginRepository.login(username, password)
 
         if (result is Result.Success) {
+//            println(result.data.displayName)
             _loginResult.value =
                 LoginResult(success = LoggedInUserView(displayName = result.data.displayName,token = result.data.userId))
         } else {
