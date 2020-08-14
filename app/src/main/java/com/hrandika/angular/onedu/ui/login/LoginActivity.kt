@@ -8,21 +8,21 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.hrandika.angular.onedu.R
 import com.hrandika.angular.onedu.utils.crypto.BiometricPromptUtils
+import com.hrandika.angular.onedu.utils.crypto.BiometricPromptUtils.createBiometricPrompt
 import com.hrandika.angular.onedu.utils.crypto.CIPHERTEXT_WRAPPER
 import com.hrandika.angular.onedu.utils.crypto.CryptographyManager
 import com.hrandika.angular.onedu.utils.crypto.SHARED_PREFS_FILENAME
+import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
     private val TAG = "AppCompatActivity"
@@ -47,9 +47,10 @@ class LoginActivity : AppCompatActivity() {
         val login = findViewById<Button>(R.id.login)
         val loading = findViewById<ProgressBar>(R.id.loading)
         val useBio = findViewById<Button>(R.id.loginBio)
+        val tokenDataView:TextView=findViewById<TextView>(R.id.tokenData)
 
         useBio.setOnClickListener {
-
+            showBiometricPromt()
         }
 
 
@@ -144,6 +145,39 @@ class LoginActivity : AppCompatActivity() {
                 "No Biometrics to setup",
                 Toast.LENGTH_LONG
             ).show()
+        }
+    }
+
+
+    private  fun showBiometricPromt(){
+        val canAuthenticate = BiometricManager.from(applicationContext).canAuthenticate()
+        if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
+            val secretKeyName = getString(R.string.secret_key_name)
+            cryptographyManager = CryptographyManager()
+            val cipher = cryptographyManager.getInitializedCipherForEncryption(secretKeyName)
+            val executor = ContextCompat.getMainExecutor(this)
+            val biometricPrompt = BiometricPromptUtils.createBiometricPrompt(
+                    this,
+                    executor,
+                    ::decryptToken
+                )
+            val promptInfo = BiometricPromptUtils.createPromptInfo(this)
+            biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+        }else {
+            Toast.makeText(
+                applicationContext,
+                "No Biometrics to setup",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private  fun decryptToken(authResult: BiometricPrompt.AuthenticationResult){
+        ciphertextWrapper?.let { wrapper ->
+            authResult.cryptoObject?.cipher?.let {ciper->
+                val token=cryptographyManager.decryptData(wrapper.ciphertext, ciper)
+                tokenData.text=token
+            }
         }
     }
 
