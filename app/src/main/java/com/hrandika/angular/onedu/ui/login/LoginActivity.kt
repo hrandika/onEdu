@@ -117,7 +117,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
-        this.showBiometricPromptForEncryption(model);
+        this.showBiometricPromptForEncryption(model)
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
