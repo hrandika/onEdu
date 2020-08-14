@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hrandika.angular.onedu.R
 
-class CourseFragment : Fragment(){
+
+class CourseFragment : Fragment() {
 
     private lateinit var viewModel: CourseViewModel
 
@@ -32,8 +33,10 @@ class CourseFragment : Fragment(){
             // Update the cached copy of the words in the adapter.
             words?.let { adapter.setCoursers(it) }
         })
+        println("hello course created")
 
         return root
     }
+
 
 }
