@@ -128,7 +128,7 @@ private class CryptographyManagerImpl : CryptographyManager {
         prefKey: String
     ) {
         val json = Gson().toJson(ciphertextWrapper)
-        context.getSharedPreferences(filename, mode).edit().putString(prefKey, json).apply()
+        context.getSharedPreferences(filename, mode).edit().putString(prefKey, json).apply();
     }
 
     override fun getCiphertextWrapperFromSharedPrefs(
