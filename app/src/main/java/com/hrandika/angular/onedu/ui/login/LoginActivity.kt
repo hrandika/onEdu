@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
         val useBio = findViewById<Button>(R.id.loginBio)
 
         useBio.setOnClickListener {
-
+            showBiometricPromptForDecryption()
         }
 
 
@@ -117,7 +117,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
-        this.showBiometricPromptForEncryption(model);
+        this.showBiometricPromptForEncryption(model)
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
@@ -167,6 +167,67 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
+
+    private fun showBiometricPromptForDecryption() {
+        Log.d(TAG,"decryption started")
+        if(ciphertextWrapper!=null) {
+            val canAuthenticate = BiometricManager.from(applicationContext).canAuthenticate()
+            if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
+                val secretKeyName = getString(R.string.secret_key_name)
+
+                val cipher = ciphertextWrapper?.initializationVector?.let {
+                    cryptographyManager.getInitializedCipherForDecryption(
+                        secretKeyName,
+                        it
+                    )
+                }
+
+                val biometricPrompt =
+                    BiometricPromptUtils.createBiometricPromptforDecryption(
+                        this,
+                        ::decryptServerToken
+                    )
+
+                val promptInfo = BiometricPromptUtils.createPromptInfo(this)
+                cipher?.let { BiometricPrompt.CryptoObject(it) }?.let {
+                    biometricPrompt.authenticate(
+                        promptInfo,
+                        it
+                    )
+                }
+            } else {
+                Toast.makeText(
+                    applicationContext,
+                    "No Biometrics to setup",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }else{
+            Toast.makeText(
+                applicationContext,
+                "Not logged in",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+    private fun decryptServerToken(authResult: BiometricPrompt.AuthenticationResult){
+        val decryptedText= authResult.cryptoObject?.cipher?.let {
+            ciphertextWrapper?.ciphertext?.let { it1 ->
+                cryptographyManager.decryptData(
+                    it1,
+                    it
+                )
+            }
+        }
+        Toast.makeText(
+            applicationContext,
+            decryptedText,
+            Toast.LENGTH_LONG
+        ).show()
+
+    }
+
 }
 
 /**
