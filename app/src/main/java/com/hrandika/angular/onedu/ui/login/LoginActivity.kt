@@ -50,7 +50,7 @@ class LoginActivity : AppCompatActivity() {
         val useBio = findViewById<Button>(R.id.loginBio)
 
         useBio.setOnClickListener {
-            this.showBiometricPromptForDecryption(LoggedInUserView("firsn name", "id"));
+            this.showBiometricPromptForDecryption();
         }
 
 
@@ -166,7 +166,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun showBiometricPromptForDecryption(model: LoggedInUserView) {
+    private fun showBiometricPromptForDecryption() {
         if(ciphertextWrapper != null){
             val canAuthenticate = BiometricManager.from(applicationContext).canAuthenticate()
             if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
@@ -177,9 +177,8 @@ class LoginActivity : AppCompatActivity() {
                         textWrapper.initializationVector
                     )
                     var biometricPrompt =
-                        BiometricPromptUtils.createBiometricPrompt(
+                        BiometricPromptUtils.createBiometricPromptWithoutModel(
                             this,
-                            model,
                             ::decryptServerTokenFromStorage
                         )
                     val promptInfo = BiometricPromptUtils.createPromptInfo(this)
@@ -192,7 +191,7 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun decryptServerTokenFromStorage(authResult: BiometricPrompt.AuthenticationResult, model: LoggedInUserView) {
+    private fun decryptServerTokenFromStorage(authResult: BiometricPrompt.AuthenticationResult) {
         ciphertextWrapper?.let { textWrapper ->
             authResult.cryptoObject?.cipher?.let {
                 val plaintext =
