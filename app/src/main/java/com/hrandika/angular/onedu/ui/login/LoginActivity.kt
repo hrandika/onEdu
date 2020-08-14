@@ -8,10 +8,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
@@ -36,6 +33,7 @@ class LoginActivity : AppCompatActivity() {
             Context.MODE_PRIVATE,
             CIPHERTEXT_WRAPPER
         )
+    private lateinit var tokenText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +47,7 @@ class LoginActivity : AppCompatActivity() {
         val useBio = findViewById<Button>(R.id.loginBio)
 
         useBio.setOnClickListener {
-
+            this.decrypt(LoggedInUserView(username.text.toString(), password.text.toString()));
         }
 
 
@@ -166,6 +164,41 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+    private fun decryptServerTokenFromStorage(authResult: BiometricPrompt.AuthenticationResult, model: LoggedInUserView) {
+        ciphertextWrapper?.let { textWrapper ->
+            authResult.cryptoObject?.cipher?.let {
+                val plaintext =
+                    cryptographyManager.decryptData(textWrapper.ciphertext, it)
+                tokenText.text = plaintext
+            }
+        }
+    }
+
+    private fun decrypt(model: LoggedInUserView) {
+        if(ciphertextWrapper != null){
+            val canAuthenticate = BiometricManager.from(applicationContext).canAuthenticate()
+            if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
+                ciphertextWrapper?.let { text ->
+                    val secretKeyName = getString(R.string.secret_key_name)
+                    val cipher = cryptographyManager.getInitializedCipherForDecryption(
+                        secretKeyName,
+                        text.initializationVector
+                    )
+                    var biometricPrompt =
+                        BiometricPromptUtils.createBiometricPrompt(
+                            this,
+                            model,
+                            ::decryptServerTokenFromStorage
+                        )
+                    val promptInfo = BiometricPromptUtils.createPromptInfo(this)
+                    biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+                }
+            }
+        }else{
+            Toast.makeText(this, "You haven't logged in", Toast.LENGTH_LONG).show()
+        }
+
     }
 }
 
