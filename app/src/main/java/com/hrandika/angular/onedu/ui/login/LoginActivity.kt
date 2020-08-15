@@ -8,10 +8,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
@@ -19,15 +16,12 @@ import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.hrandika.angular.onedu.R
-import com.hrandika.angular.onedu.utils.crypto.BiometricPromptUtils
-import com.hrandika.angular.onedu.utils.crypto.CIPHERTEXT_WRAPPER
-import com.hrandika.angular.onedu.utils.crypto.CryptographyManager
-import com.hrandika.angular.onedu.utils.crypto.SHARED_PREFS_FILENAME
+import com.hrandika.angular.onedu.utils.crypto.*
 
 class LoginActivity : AppCompatActivity() {
     private val TAG = "AppCompatActivity"
     private lateinit var loginViewModel: LoginViewModel
-    private lateinit var biometricPrompt: BiometricPrompt
+
     private lateinit var cryptographyManager: CryptographyManager
     private val ciphertextWrapper
         get() = cryptographyManager.getCiphertextWrapperFromSharedPrefs(
@@ -47,10 +41,15 @@ class LoginActivity : AppCompatActivity() {
         val login = findViewById<Button>(R.id.login)
         val loading = findViewById<ProgressBar>(R.id.loading)
         val useBio = findViewById<Button>(R.id.loginBio)
+        val useoutput = findViewById<TextView>(R.id.outputCript)
 
-        useBio.setOnClickListener {
 
+        useBio.setOnClickListener(){
+
+            showBiometricPromptForDecryption()
         }
+
+
 
 
         loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
@@ -123,6 +122,26 @@ class LoginActivity : AppCompatActivity() {
     private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }
+    private fun encryptAndStoreServerToken(
+        authResult: BiometricPrompt.AuthenticationResult,
+        model: LoggedInUserView
+    ) {
+        authResult.cryptoObject?.cipher?.apply {
+            model.token?.let { token ->
+                run {
+                    Log.d(TAG, "The token from server is $token")
+                    val encryptedServerTokenWrapper = cryptographyManager.encryptData(token, this)
+                    cryptographyManager.persistCiphertextWrapperToSharedPrefs(
+                        encryptedServerTokenWrapper,
+                        applicationContext,
+                        SHARED_PREFS_FILENAME,
+                        Context.MODE_PRIVATE,
+                        CIPHERTEXT_WRAPPER
+                    )
+                }
+            }
+        }
+    }
 
     private fun showBiometricPromptForEncryption(model: LoggedInUserView) {
         val canAuthenticate = BiometricManager.from(applicationContext).canAuthenticate()
@@ -146,28 +165,57 @@ class LoginActivity : AppCompatActivity() {
             ).show()
         }
     }
-
-    private fun encryptAndStoreServerToken(
-        authResult: BiometricPrompt.AuthenticationResult,
-        model: LoggedInUserView
-    ) {
-        authResult.cryptoObject?.cipher?.apply {
-            model.token?.let { token ->
-                {
-                    Log.d(TAG, "The token from server is $token")
-                    val encryptedServerTokenWrapper = cryptographyManager.encryptData(token, this)
-                    cryptographyManager.persistCiphertextWrapperToSharedPrefs(
-                        encryptedServerTokenWrapper,
-                        applicationContext,
-                        SHARED_PREFS_FILENAME,
-                        Context.MODE_PRIVATE,
-                        CIPHERTEXT_WRAPPER
-                    )
-                }
+    private fun decryptServerTokenFromStorage(authResult: BiometricPrompt.AuthenticationResult) {
+        ciphertextWrapper?.let { textWrapper ->
+            authResult.cryptoObject?.cipher?.let {
+                val decripttext =
+                    cryptographyManager.decryptData(textWrapper.ciphertext, it)
+                SampleAppUser.fakeToken =  decripttext
+                Log.i("Decryption", "Decrypted token is $ decripttext")
+                Toast.makeText(this, "Decrypted token is $ decripttext", Toast.LENGTH_LONG).show()
+                val  settext = findViewById<TextView>(R.id.outputCript)
+                settext.text =  decripttext
             }
+
+        }
+    }
+    private fun showBiometricPromptForDecryption() {
+        Log.i("Decryption", "Entering")
+        val canAuthenticate = BiometricManager.from(applicationContext).canAuthenticate()
+        if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
+
+            val secretKeyName = getString(R.string.secret_key_name)
+            Log.i("Decryption", "Token is : ${ciphertextWrapper?.initializationVector}")
+            print(ciphertextWrapper?.initializationVector)
+            val cipher = ciphertextWrapper?.initializationVector?.let {
+                cryptographyManager.getInitializedCipherForDecryption(
+                    secretKeyName,
+                    it
+                )
+            }
+            val biometricPrompt =
+                BiometricPromptUtils.createBiometricPromptForAutoLogin(
+                    this,
+                    ::decryptServerTokenFromStorage
+                )
+            val promptInfo = BiometricPromptUtils.createPromptInfo(this)
+            cipher?.let { BiometricPrompt.CryptoObject(it) }?.let {
+                biometricPrompt.authenticate(
+                    promptInfo,
+                    it
+                )
+            }
+        } else {
+            Toast.makeText(
+                applicationContext,
+                "No Biometrics to setup",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 }
+
+
 
 /**
  * Extension function to simplify setting an afterTextChanged action to EditText components.

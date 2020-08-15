@@ -75,6 +75,20 @@
         app:layout_constraintTop_toBottomOf="@+id/login"
         app:layout_constraintVertical_bias="0.2" />
 
+    <TextView
+        android:id="@+id/outputCript"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:textAlignment="center"
+        android:textColor="@color/ic_launcher_background"
+        android:textSize="19dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loginBio"
+        app:layout_constraintVertical_bias="0.383" />
+
     <ProgressBar
         android:id="@+id/loading"
         android:layout_width="wrap_content"
