@@ -167,6 +167,15 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+    private fun authenticateToDecrypt() {
+        readyToEncrypt = false
+        if (BiometricManager.from(applicationContext).canAuthenticate() == BiometricManager
+                .BIOMETRIC_SUCCESS) {
+            val cipher = cryptographyManager.getInitializedCipherForDecryption(secretKeyName,initializationVector)
+            biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+        }
+
+    }
 }
 
 /**
