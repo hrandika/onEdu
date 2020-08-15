@@ -8,10 +8,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
@@ -19,16 +16,15 @@ import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.hrandika.angular.onedu.R
-import com.hrandika.angular.onedu.utils.crypto.BiometricPromptUtils
-import com.hrandika.angular.onedu.utils.crypto.CIPHERTEXT_WRAPPER
-import com.hrandika.angular.onedu.utils.crypto.CryptographyManager
-import com.hrandika.angular.onedu.utils.crypto.SHARED_PREFS_FILENAME
+import com.hrandika.angular.onedu.utils.crypto.*
 
 class LoginActivity : AppCompatActivity() {
     private val TAG = "AppCompatActivity"
+    private val TAG2 = "Save"
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var cryptographyManager: CryptographyManager
+
     private val ciphertextWrapper
         get() = cryptographyManager.getCiphertextWrapperFromSharedPrefs(
             applicationContext,
@@ -49,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
         val useBio = findViewById<Button>(R.id.loginBio)
 
         useBio.setOnClickListener {
-
+            showBiometricPromptForDecryption()
         }
 
 
@@ -147,13 +143,49 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun showBiometricPromptForDecryption() {
+        Log.i("Decryption", "Entering")
+        val canAuthenticate = BiometricManager.from(applicationContext).canAuthenticate()
+        if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
+
+            val secretKeyName = getString(R.string.secret_key_name)
+            Log.i("Decryption", "Id is : ${ciphertextWrapper?.initializationVector}")
+            print(ciphertextWrapper?.initializationVector)
+            val cipher = ciphertextWrapper?.initializationVector?.let {
+                cryptographyManager.getInitializedCipherForDecryption(
+                    secretKeyName,
+                    it
+                )
+            }
+            val biometricPrompt =
+                BiometricPromptUtils.createBiometricPromptForAutoLogin(
+                    this,
+                    ::decryptServerTokenFromStorage
+                )
+            val promptInfo = BiometricPromptUtils.createPromptInfo(this)
+            cipher?.let { BiometricPrompt.CryptoObject(it) }?.let {
+                biometricPrompt.authenticate(
+                    promptInfo,
+                    it
+                )
+            }!!
+        } else {
+            Toast.makeText(
+                applicationContext,
+                "No Biometrics to setup",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
     private fun encryptAndStoreServerToken(
         authResult: BiometricPrompt.AuthenticationResult,
         model: LoggedInUserView
     ) {
+        Log.d(TAG2, "Enter")
         authResult.cryptoObject?.cipher?.apply {
             model.token?.let { token ->
-                {
+                run {
                     Log.d(TAG, "The token from server is $token")
                     val encryptedServerTokenWrapper = cryptographyManager.encryptData(token, this)
                     cryptographyManager.persistCiphertextWrapperToSharedPrefs(
@@ -164,6 +196,20 @@ class LoginActivity : AppCompatActivity() {
                         CIPHERTEXT_WRAPPER
                     )
                 }
+            }
+        }
+    }
+
+    private fun decryptServerTokenFromStorage(authResult: BiometricPrompt.AuthenticationResult) {
+        ciphertextWrapper?.let { textWrapper ->
+            authResult.cryptoObject?.cipher?.let {
+                val plainToken =
+                    cryptographyManager.decryptData(textWrapper.ciphertext, it)
+                SampleAppUser.fakeToken = plainToken
+                Log.i("Decryption", "Decrypted token is $plainToken")
+                Toast.makeText(this, "Decrypted token is $plainToken", Toast.LENGTH_LONG).show()
+                val outputToken = findViewById<TextView>(R.id.textOutput)
+                outputToken.text = plainToken
             }
         }
     }
